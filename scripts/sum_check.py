@@ -97,7 +97,10 @@ def sum_check_protocol(
     sum_check: Dict[int, Union[int, ModularInteger]] = {}  # Sum-check values at each round
 
     for j in range(v + 1):
-        print_header(f"Round {j}")
+        if j < v:
+            print_header(f"Round {j}")
+        if j == v:
+            print_header(f"Final check")
 
         if j == 0:
             univariate[j] = g  # Initial polynomial
@@ -212,7 +215,7 @@ def consistency_check(
     elif j == v:
         # Final check: verify that g_{v-1}(r_{v-1}) equals g evaluated at all random points
         random_tuple = ', '.join([str(int(r)) for r in rand])
-        print(f"\nV checks that g_{j - 1}({int(rand[j - 1])}) = g({random_tuple}):\n")
+        print(f"\nV checks that g_{j - 1}({int(rand[j - 1])}) = g({random_tuple}) (the RHS given P, assuming P committed to g at the outset, or an oracle):\n")
         equation_1 = f"g_{j - 1}({int(rand[j - 1])}) = {rand_eval[j]}"
         equation_2 = f"g({random_tuple}) = {sum_check[j]}"
         display_aligned(equation_1, equation_2)
@@ -223,9 +226,12 @@ def consistency_check(
         display_aligned(equation_1, equation_2)
 
     if check_passed:
-        print("\nCHECK PASSED")
+        if j == v:
+            print("\nFINAL CHECK PASSED: ACCEPT")
+        else:
+            print("\nCHECK PASSED")
     else:
-        print("\nCHECK FAILED: P is lying")
+        print("\nCHECK FAILED: REJECT")
 
 
 """ANCILLARY FUNCTIONS"""
